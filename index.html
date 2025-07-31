@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Weather Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide-icons"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <h1 class="text-4xl font-bold text-center mb-6">Weather Dashboard</h1>
+
+        <div class="flex justify-center gap-4 mb-6">
+            <button id="unitToggle"
+                    class="px-4 py-2 rounded-xl font-semibold text-sm bg-purple-600 hover:bg-purple-700 transition-colors duration-300"
+                    aria-label="Toggle temperature unit between Celsius and Fahrenheit">
+                Switch to °F
+            </button>
+            <button id="darkModeToggle"
+                    class="px-4 py-2 rounded-xl font-semibold text-sm bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
+                    aria-label="Toggle dark and light mode theme">
+                Toggle Dark Mode
+            </button>
+        </div>
+
+        <form id="searchForm" class="search-box flex flex-col sm:flex-row gap-4 mb-6" role="search">
+            <label for="cityInput" class="sr-only">Enter city name</label>
+            <input type="text" id="cityInput" placeholder="Enter city name..."
+                   class="flex-grow p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                   aria-label="City name input" autocomplete="off">
+            <button type="submit" id="searchButton"
+                    class="px-6 py-3 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300">
+                Search
+            </button>
+        </form>
+
+        <div id="errorMessage" class="error-message" role="alert" aria-live="polite">
+            City not found. Please try again.
+        </div>
+
+        <div id="currentWeather" class="current-weather-card hidden" role="region" aria-label="Current Weather Information">
+            <div id="currentWeatherSkeleton" class="current-weather-skeleton">
+                <div class="animate-pulse flex flex-col md:flex-row items-center justify-between mb-4">
+                    <div class="w-full md:w-1/2 h-24 bg-white/20 rounded-lg mb-4 md:mb-0"></div>
+                    <div class="w-full md:w-1/3 h-24 bg-white/20 rounded-lg"></div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                    <div class="h-20 bg-white/20 rounded-lg"></div>
+                </div>
+            </div>
+
+            <div id="currentWeatherContent" class="hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between mb-4">
+                    <div class="text-center md:text-left mb-4 md:mb-0">
+                        <h2 class="text-3xl font-semibold" id="locationName"></h2>
+                        <p class="text-lg opacity-80" id="currentDate"></p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <img id="weatherIcon" src="" alt="Weather Icon" class="w-20 h-20">
+                        <div>
+                            <p class="text-5xl font-bold" id="temperature">--°C</p>
+                            <p class="text-xl opacity-90" id="condition"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-grid grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div><span>Feels Like</span><span class="font-medium text-lg" id="feelsLike">--°C</span></div>
+                    <div><span>Humidity</span><span class="font-medium text-lg" id="humidity">--%</span></div>
+                    <div><span>Wind Speed</span><span class="font-medium text-lg" id="windSpeed">-- km/h</span></div>
+                    <div><span>UV Index</span><span class="font-medium text-lg" id="uvIndex">--</span></div>
+                    <div><span>Visibility</span><span class="font-medium text-lg" id="visibility">-- km</span></div>
+                    <div><span>Pressure</span><span class="font-medium text-lg" id="pressure">-- hPa</span></div>
+                    <div><span>Sunrise</span><span class="font-medium text-lg" id="sunrise">--</span></div>
+                    <div><span>Sunset</span><span class="font-medium text-lg" id="sunset">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="hourlyForecastSection" class="forecast-card hidden" role="region" aria-label="Hourly Weather Forecast">
+            <h3 class="text-2xl font-semibold mb-4 text-center">Hourly Forecast</h3>
+            <div id="hourlyForecastSkeleton" class="hourly-forecast-skeleton grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+            </div>
+            <div id="hourlyForecastContainer" class="hourly-forecast-container hidden" tabindex="0" role="group" aria-label="Scrollable hourly forecast">
+            </div>
+        </div>
+
+        <div id="forecastSection" class="forecast-card hidden" role="region" aria-label="7 Day Weather Forecast">
+            <h3 class="text-2xl font-semibold mb-4 text-center">7-Day Forecast</h3>
+            <div id="forecastSkeleton" class="forecast-skeleton grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+                <div class="h-32 bg-white/20 rounded-lg"></div>
+            </div>
+            <div id="forecastContainer" class="forecast-container hidden" tabindex="0" role="group" aria-label="Scrollable 7-day forecast">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
